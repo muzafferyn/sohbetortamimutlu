@@ -7,22 +7,34 @@
 	<title>Modern Sohbet Odası</title>
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap">
 	<style>
-		body {
-			background: linear-gradient(135deg, #232526 0%, #414345 100%);
-			color: #fff;
-			font-family: 'Roboto', Arial, sans-serif;
+		html, body {
+			height: 100%;
 			margin: 0;
+			padding: 0;
+			font-family: 'Roboto', Arial, sans-serif;
+			background: #313338;
+			color: #f2f3f5;
+		}
+		body {
 			min-height: 100vh;
+			height: 100vh;
+			width: 100vw;
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
 		}
 		.container {
-			max-width: 420px;
-			margin: 48px auto;
-			background: rgba(34,34,34,0.98);
-			border-radius: 18px;
-			box-shadow: 0 8px 32px #0007;
-			padding: 0 0 20px 0;
-			position: relative;
-			overflow: hidden;
+			width: 100vw;
+			height: 100vh;
+			margin: 0;
+			background: #313338;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			box-shadow: none;
+			border-radius: 0;
+			padding: 0;
 			animation: fadeIn 0.7s;
 		}
 		@keyframes fadeIn {
@@ -30,8 +42,16 @@
 			to { opacity: 1; transform: none; }
 		}
 		#login-screen, #chat-screen {
-			padding: 36px 28px 0 28px;
+			width: 100%;
+			max-width: 420px;
+			margin: auto;
+			background: #2b2d31;
+			border-radius: 12px;
+			box-shadow: 0 4px 32px #0007;
+			padding: 36px 28px 24px 28px;
 			animation: fadeIn 0.7s;
+			position: relative;
+			top: 0;
 		}
 		#login-screen h2 {
 			text-align: center;
@@ -49,7 +69,7 @@
 			border: none;
 			margin-bottom: 16px;
 			font-size: 1.08rem;
-			background: #292929;
+			background: #383a40;
 			color: #fff;
 			outline: none;
 			transition: box-shadow 0.2s;
@@ -97,26 +117,49 @@
 		.logout:hover {
 			background: #e53e3e;
 		}
+		#chat-screen {
+			width: 100vw;
+			max-width: 700px;
+			min-height: 80vh;
+			height: 80vh;
+			display: flex;
+			flex-direction: column;
+			justify-content: flex-end;
+			align-items: stretch;
+			background: #2b2d31;
+			margin: 0 auto;
+			box-shadow: 0 4px 32px #0007;
+			border-radius: 12px;
+			padding: 0 0 18px 0;
+		}
 		#chat-box {
 			background: #23272b;
 			border-radius: 10px;
-			min-height: 260px;
-			max-height: 340px;
+			flex: 1 1 auto;
+			min-height: 0;
+			max-height: none;
 			overflow-y: auto;
-			padding: 14px 8px 14px 8px;
-			margin-bottom: 14px;
+			padding: 18px 16px 18px 16px;
+			margin: 0 0 12px 0;
 			font-size: 1.04rem;
 			box-shadow: 0 2px 8px #0002 inset;
 			transition: background 0.2s;
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
 		}
 		.message {
-			margin-bottom: 13px;
-			padding: 7px 10px 7px 10px;
+			margin-bottom: 0;
+			padding: 10px 14px 10px 14px;
 			border-radius: 7px;
-			background: #2a2d32;
+			background: #383a40;
 			box-shadow: 0 1px 4px #0001;
 			animation: fadeIn 0.5s;
 			word-break: break-word;
+			display: flex;
+			align-items: center;
+			gap: 8px;
 		}
 		.message .user {
 			font-weight: bold;
@@ -127,26 +170,54 @@
 		.message .time {
 			color: #aaa;
 			font-size: 0.89em;
-			margin-left: 8px;
-			float: right;
+			margin-left: auto;
+			margin-right: 0;
+			float: none;
 		}
 		#chat-form {
 			display: flex;
-			gap: 8px;
+			gap: 10px;
+			padding: 0 16px;
+			margin-bottom: 0;
 		}
 		#message {
 			flex: 1;
 			margin-bottom: 0;
+			background: #23272b;
+			border: 1px solid #383a40;
+			color: #fff;
 		}
 		#chat-form button {
-			width: 110px;
+			width: 120px;
 			margin-bottom: 0;
 		}
+		@media (max-width: 900px) {
+			#chat-screen {
+				max-width: 98vw;
+			}
+		}
 		@media (max-width: 600px) {
-			.container { max-width: 100vw; margin: 0; border-radius: 0; box-shadow: none; }
-			#login-screen, #chat-screen { padding: 24px 8px 0 8px; }
-			#chat-box { min-height: 140px; max-height: 180px; }
-			#chat-form button { width: 80px; }
+			.container { padding: 0; }
+			#login-screen, #chat-screen {
+				padding: 0;
+				border-radius: 0;
+				box-shadow: none;
+				max-width: 100vw;
+			}
+			#chat-screen {
+				min-height: 100vh;
+				height: 100vh;
+				border-radius: 0;
+			}
+			#chat-box {
+				padding: 10px 4px 10px 4px;
+			}
+			#chat-form {
+				padding: 0 4px;
+			}
+			#chat-form button {
+				width: 70px;
+			}
 		}
 	</style>
 </head>
@@ -163,7 +234,7 @@
 				<button onclick="logout()" class="logout">Çıkış</button>
 			</div>
 			<div id="chat-box"></div>
-			<form id="chat-form" onsubmit="return sendMessage();">
+			<form id="chat-form" autocomplete="off">
 				<input type="text" id="message" placeholder="Mesajınızı yazın..." maxlength="200" autocomplete="off">
 				<button type="submit">Gönder</button>
 			</form>
@@ -210,7 +281,7 @@
 		function sendMessage() {
 			var msg = document.getElementById('message').value.trim();
 			var username = localStorage.getItem('chat_username');
-			if(msg.length === 0) return false;
+			if(msg.length === 0) return;
 			var now = new Date();
 			var time = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
 			db.ref('messages').push({
@@ -220,8 +291,13 @@
 			});
 			document.getElementById('message').value = '';
 			setTimeout(function(){ document.getElementById('message').focus(); }, 100);
-			return false;
 		}
+
+		// Form submit eventini dinle
+		document.getElementById('chat-form').addEventListener('submit', function(e) {
+			e.preventDefault();
+			sendMessage();
+		});
 
 		// Mesajları çekme ve ekrana yazma
 		function loadMessages() {
