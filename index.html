@@ -2,81 +2,76 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Global Sohbet</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
+<title>Global Chat</title>
 
 <style>
+:root{
+  --bg:#0b141a;
+  --box:#111b21;
+  --me:#005c4b;
+  --other:#202c33;
+  --text:#fff;
+}
+.light{
+  --bg:#f2f2f2;
+  --box:#fff;
+  --me:#dcf8c6;
+  --other:#e4e6eb;
+  --text:#000;
+}
 *{box-sizing:border-box}
 body{
   margin:0;
-  background:#0b141a;
-  font-family:system-ui,-apple-system;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui;
 }
 .chat{
-  width:100%;
   max-width:420px;
   height:100vh;
-  max-height:700px;
-  background:#111b21;
+  margin:auto;
+  background:var(--box);
   display:flex;
   flex-direction:column;
 }
 .header{
-  background:#202c33;
-  padding:14px;
-  text-align:center;
-  font-weight:600;
+  background:var(--other);
+  padding:12px;
+  display:flex;
+  justify-content:space-between;
 }
 .messages{
   flex:1;
-  padding:12px;
+  padding:10px;
   overflow-y:auto;
 }
 .msg{
   max-width:80%;
-  margin-bottom:10px;
-  padding:10px 14px;
+  padding:8px 12px;
   border-radius:12px;
-  font-size:14px;
-  word-break:break-word;
+  margin-bottom:8px;
 }
-.me{
-  background:#005c4b;
-  margin-left:auto;
-}
-.other{
-  background:#202c33;
-}
-.user{
-  font-size:11px;
-  opacity:.7;
-  margin-bottom:4px;
-}
+.me{background:var(--me);margin-left:auto}
+.other{background:var(--other)}
+.time{font-size:10px;opacity:.6;text-align:right}
+.typing{font-size:12px;opacity:.6;padding:5px}
 .input{
   display:flex;
-  padding:10px;
-  background:#202c33;
+  padding:8px;
+  background:var(--other);
 }
-.input input{
+input{
   flex:1;
-  padding:12px;
+  padding:10px;
   border:none;
   border-radius:20px;
-  outline:none;
 }
-.input button{
-  margin-left:8px;
-  padding:0 18px;
+button{
+  margin-left:6px;
   border:none;
   border-radius:50%;
-  background:#00a884;
-  font-size:18px;
+  padding:0 14px;
   cursor:pointer;
 }
 </style>
@@ -84,10 +79,16 @@ body{
 <body>
 
 <div class="chat">
-  <div class="header">Global Sohbet</div>
+  <div class="header">
+    <b>Global Chat</b>
+    <button onclick="toggleTheme()">🌓</button>
+  </div>
+
   <div class="messages" id="messages"></div>
+  <div class="typing" id="typing"></div>
+
   <div class="input">
-    <input id="text" placeholder="Mesaj yaz..." />
+    <input id="text" placeholder="Mesaj yaz..." oninput="typingNow()">
     <button onclick="send()">➤</button>
   </div>
 </div>
@@ -95,41 +96,59 @@ body{
 <script>
 const username = prompt("Kullanıcı adın?") || "Anonim";
 
-// Ably bağlantısı (public demo key)
-const ably = new Ably.Realtime({
-  key: "ably-public-demo:key"
-});
+/*
+ PUBLIC CHAT SERVER
+ hiçbir ayar yok
+ herkes aynı kanalda
+*/
+const ws = new WebSocket(
+  "wss://socketsbay.com/wss/v2/1/demo/"
+);
 
-const channel = ably.channels.get("global-chat");
-
-channel.subscribe(msg => {
-  addMessage(msg.data.user, msg.data.text);
-});
+ws.onmessage = e => {
+  const data = JSON.parse(e.data);
+  if(data.type === "msg"){
+    addMsg(data.user, data.text, data.time);
+  }
+  if(data.type === "typing"){
+    typing.innerText = data.text;
+    setTimeout(()=>typing.innerText="",800);
+  }
+};
 
 function send(){
   const t = text.value.trim();
   if(!t) return;
 
-  channel.publish("msg", {
+  ws.send(JSON.stringify({
+    type:"msg",
     user: username,
-    text: t
-  });
+    text: t,
+    time: new Date().toLocaleTimeString()
+  }));
 
-  text.value = "";
+  text.value="";
 }
 
-function addMessage(user, text){
+function typingNow(){
+  ws.send(JSON.stringify({
+    type:"typing",
+    text: username+" yazıyor..."
+  }));
+}
+
+function addMsg(user, text, time){
   const div = document.createElement("div");
-  div.className = "msg " + (user === username ? "me" : "other");
-  div.innerHTML = `
-    <div class="user">${user}</div>
-    ${text}
-  `;
+  div.className = "msg " + (user===username?"me":"other");
+  div.innerHTML = `<b>${user}</b><br>${text}<div class="time">${time}</div>`;
   messages.appendChild(div);
   messages.scrollTop = messages.scrollHeight;
+}
+
+function toggleTheme(){
+  document.body.classList.toggle("light");
 }
 </script>
 
 </body>
 </html>
-
