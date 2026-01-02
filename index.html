@@ -2,102 +2,132 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Sohbet coder relax</title>
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<title>Global Chat</title>
 
 <style>
 body{
   margin:0;
-  background:#0d0d0d;
-  color:#fff;
-  font-family:Arial;
+  background:#0b141a;
+  font-family:system-ui, -apple-system;
   display:flex;
   justify-content:center;
   align-items:center;
   height:100vh;
 }
-.box{
-  width:360px;
-  background:#1b1b1b;
-  border-radius:12px;
-  padding:20px;
+.chat-box{
+  width:380px;
+  height:600px;
+  background:#111b21;
+  border-radius:16px;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
 }
-input,button{
-  width:100%;
-  padding:10px;
-  margin-top:8px;
-  border:none;
-  border-radius:6px;
-}
-button{
-  background:#00ff99;
-  cursor:pointer;
+.header{
+  background:#202c33;
+  padding:15px;
+  text-align:center;
   font-weight:bold;
 }
-#chat{
-  height:240px;
+.messages{
+  flex:1;
+  padding:15px;
   overflow-y:auto;
-  background:#000;
-  padding:10px;
-  margin-top:10px;
-  font-size:14px;
 }
 .msg{
-  margin-bottom:6px;
+  max-width:75%;
+  margin-bottom:10px;
+  padding:10px 14px;
+  border-radius:12px;
+  font-size:14px;
+  word-wrap:break-word;
+}
+.me{
+  background:#005c4b;
+  margin-left:auto;
+}
+.other{
+  background:#202c33;
+}
+.username{
+  font-size:11px;
+  opacity:.7;
+  margin-bottom:4px;
+}
+.input-area{
+  display:flex;
+  padding:10px;
+  background:#202c33;
+}
+input{
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:20px;
+  outline:none;
+}
+button{
+  margin-left:8px;
+  padding:10px 16px;
+  border:none;
+  border-radius:50%;
+  background:#00a884;
+  cursor:pointer;
+  color:#000;
+  font-weight:bold;
 }
 </style>
 </head>
 <body>
 
-<div class="box">
-  <input id="username" placeholder="Kullanıcı adı">
-  <input id="room" placeholder="Oda adı">
-  <button onclick="start()">Sohbete Gir</button>
+<div class="chat-box">
+  <div class="header">Global Chat</div>
+  <div class="messages" id="messages"></div>
 
-  <div id="chat"></div>
-
-  <input id="message" placeholder="Mesaj yaz">
-  <button onclick="sendMsg()">Gönder</button>
+  <div class="input-area">
+    <input id="text" placeholder="Mesaj yaz..." />
+    <button onclick="send()">➤</button>
+  </div>
 </div>
 
 <script>
-let peer;
-let connections = [];
-let name = "";
+const username = prompt("Kullanıcı adın?") || "Anonim";
 
-function start(){
-  name = username.value || "Anonim";
-  const roomName = room.value;
-  if(!roomName) return alert("Oda adı gir");
+// Public WebSocket (Pub/Sub)
+const ws = new WebSocket(
+  "wss://demo.piesocket.com/v3/channel/global-chat?api_key=demokey&notify_self=1"
+);
 
-  peer = new Peer(name + "-" + roomName, {
-    host: "peerjs-server.herokuapp.com",
-    secure: true,
-    port: 443
-  });
+ws.onmessage = e => {
+  const data = JSON.parse(e.data);
+  if(!data.text) return;
 
-  peer.on("open", () => addMsg("🟢 Bağlandın"));
+  addMessage(data.user, data.text);
+};
 
-  peer.on("connection", conn => {
-    connections.push(conn);
-    conn.on("data", data => addMsg(data));
-  });
+function send(){
+  const msg = text.value.trim();
+  if(!msg) return;
+
+  ws.send(JSON.stringify({
+    user: username,
+    text: msg
+  }));
+
+  text.value = "";
 }
 
-function sendMsg(){
-  const text = message.value.trim();
-  if(!text) return;
+function addMessage(user, text){
+  const div = document.createElement("div");
+  div.className = "msg " + (user === username ? "me" : "other");
 
-  const data = `<b>${name}:</b> ${text}`;
-  addMsg(data);
+  div.innerHTML = `
+    <div class="username">${user}</div>
+    ${text}
+  `;
 
-  connections.forEach(c => c.send(data));
-  message.value = "";
-}
-
-function addMsg(text){
-  chat.innerHTML += `<div class="msg">${text}</div>`;
-  chat.scrollTop = chat.scrollHeight;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
 }
 </script>
 
