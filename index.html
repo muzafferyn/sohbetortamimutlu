@@ -433,18 +433,20 @@
 				font-size: 0.8em;
 			}
 		}
-	</style>
 	<style>
     .modal-uyari-bg {
         position: fixed;
-        top: 0; left: 0;
-        width: 100vw;
-        height: 100vh;
+        inset: 0;
         background: rgba(10,14,23,0.75);
         display: flex;
         align-items: center;
         justify-content: center;
         z-index: 9999;
+        animation: fadeIn 0.25s ease;
+    }
+
+    .modal-uyari-bg.hide {
+        animation: fadeOut 0.3s ease forwards;
     }
 
     .modal-uyari-box {
@@ -459,7 +461,8 @@
         position: relative;
         margin: 0 10px;
         color: #fff;
-        font-family: inherit;
+        transform: scale(0.95);
+        animation: scaleIn 0.25s ease forwards;
     }
 
     .close-btn {
@@ -490,59 +493,63 @@
         margin-right: 10px;
         background: #fff;
         border-radius: 8px;
+        object-fit: cover;
     }
 
     .header span {
         font-size: 1.13rem;
         font-weight: bold;
         color: #ff6b6b;
-        letter-spacing: 0.5px;
     }
 
     .content {
         font-size: 1.01rem;
         color: #b8c5d6;
         line-height: 1.6;
+        word-break: break-word;
     }
 
-    @media (max-width: 600px) {
-        .modal-uyari-box {
-            padding: 16px 3vw 14px;
-            max-width: 98vw;
-        }
+    @keyframes fadeIn {
+        from { opacity: 0 }
+        to { opacity: 1 }
+    }
 
-        .header img {
-            width: 26px;
-            height: 26px;
-        }
+    @keyframes fadeOut {
+        to { opacity: 0 }
+    }
 
-        .header span {
-            font-size: 1rem;
-        }
-
-        .content {
-            font-size: 0.97rem;
-        }
+    @keyframes scaleIn {
+        to { transform: scale(1) }
     }
 </style>
 
-<div class="modal-uyari-bg">
+<div class="modal-uyari-bg" id="uyariModal">
     <div class="modal-uyari-box">
-        <button class="close-btn"
-            onclick="this.closest('.modal-uyari-bg').style.display='none'">
-            &times;
-        </button>
+        <button class="close-btn" onclick="closeModal()">&times;</button>
 
         <div class="header">
-            <img src="https://w7.pngwing.com/pngs/436/541/png-transparent-rage-comic-internet-meme-know-your-meme-humour-meme-hat-logo-monochrome-thumbnail.png" alt="Uyarı">
+            <img src="https://w7.pngwing.com/pngs/436/541/png-transparent-rage-comic-internet-meme-know-your-meme-humour-meme-hat-logo-monochrome-thumbnail.png">
             <span>Uyarı</span>
         </div>
 
         <div class="content">
-            Şu anda Test aşaması hata olabilir  aQ adam olun  kızlar birşeyler yer misiniz 
+            Şu anda test aQ
         </div>
     </div>
 </div>
+
+<script>
+    const modal = document.getElementById('uyariModal');
+
+    function closeModal() {
+        modal.classList.add('hide');
+        setTimeout(() => modal.remove(), 300);
+    }
+
+    // 2 saniye sonra otomatik kapanır
+    setTimeout(closeModal, 2000);
+</script>
+
 
 </head>
 <body>
@@ -903,5 +910,6 @@ function listenTyping() {
 			}
 		}
 	</script>
+
 
 
