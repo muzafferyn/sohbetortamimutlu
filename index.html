@@ -434,6 +434,116 @@
 			}
 		}
 	</style>
+	<style>
+    .modal-uyari-bg {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(10,14,23,0.75);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
+    .modal-uyari-box {
+        background: #1a1f2e;
+        border-radius: 18px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+        padding: 28px 20px 20px;
+        border: 1.5px solid #436b9d33;
+        width: 100%;
+        max-width: 370px;
+        text-align: center;
+        position: relative;
+        margin: 0 10px;
+        color: #fff;
+        font-family: inherit;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 16px;
+        background: none;
+        border: none;
+        font-size: 1.7rem;
+        color: #b8c5d6;
+        cursor: pointer;
+    }
+
+    .close-btn:hover {
+        color: #ff6b6b;
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 14px;
+    }
+
+    .header img {
+        width: 32px;
+        height: 32px;
+        margin-right: 10px;
+        background: #fff;
+        border-radius: 8px;
+    }
+
+    .header span {
+        font-size: 1.13rem;
+        font-weight: bold;
+        color: #ff6b6b;
+        letter-spacing: 0.5px;
+    }
+
+    .content {
+        font-size: 1.01rem;
+        color: #b8c5d6;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 600px) {
+        .modal-uyari-box {
+            padding: 16px 3vw 14px;
+            max-width: 98vw;
+        }
+
+        .header img {
+            width: 26px;
+            height: 26px;
+        }
+
+        .header span {
+            font-size: 1rem;
+        }
+
+        .content {
+            font-size: 0.97rem;
+        }
+    }
+</style>
+
+<div class="modal-uyari-bg">
+    <div class="modal-uyari-box">
+        <button class="close-btn"
+            onclick="this.closest('.modal-uyari-bg').style.display='none'">
+            &times;
+        </button>
+
+        <div class="header">
+            <img src="" alt="Uyarı">
+            <span>Uyarı</span>
+        </div>
+
+        <div class="content">
+            Şu anda Test aşaması hata olabilir  aQ adam olun  kızlar birşeyler yer misiniz 
+        </div>
+    </div>
+</div>
+
 </head>
 <body>
 	<div class="container">
@@ -793,3 +903,4 @@ function listenTyping() {
 			}
 		}
 	</script>
+
