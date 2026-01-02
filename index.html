@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Sohbet coder relax</title>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+
+<style>
+body{
+  margin:0;
+  background:#0d0d0d;
+  color:#fff;
+  font-family:Arial;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.box{
+  width:360px;
+  background:#1b1b1b;
+  border-radius:12px;
+  padding:20px;
+}
+input,button{
+  width:100%;
+  padding:10px;
+  margin-top:8px;
+  border:none;
+  border-radius:6px;
+}
+button{
+  background:#00ff99;
+  cursor:pointer;
+  font-weight:bold;
+}
+#chat{
+  height:240px;
+  overflow-y:auto;
+  background:#000;
+  padding:10px;
+  margin-top:10px;
+  font-size:14px;
+}
+.msg{
+  margin-bottom:6px;
+}
+</style>
+</head>
+<body>
+
+<div class="box">
+  <input id="username" placeholder="Kullanıcı adı">
+  <input id="room" placeholder="Oda adı">
+  <button onclick="start()">Sohbete Gir</button>
+
+  <div id="chat"></div>
+
+  <input id="message" placeholder="Mesaj yaz">
+  <button onclick="sendMsg()">Gönder</button>
+</div>
+
+<script>
+let peer;
+let connections = [];
+let name = "";
+
+function start(){
+  name = username.value || "Anonim";
+  const roomName = room.value;
+  if(!roomName) return alert("Oda adı gir");
+
+  peer = new Peer(name + "-" + roomName, {
+    host: "peerjs-server.herokuapp.com",
+    secure: true,
+    port: 443
+  });
+
+  peer.on("open", () => addMsg("🟢 Bağlandın"));
+
+  peer.on("connection", conn => {
+    connections.push(conn);
+    conn.on("data", data => addMsg(data));
+  });
+}
+
+function sendMsg(){
+  const text = message.value.trim();
+  if(!text) return;
+
+  const data = `<b>${name}:</b> ${text}`;
+  addMsg(data);
+
+  connections.forEach(c => c.send(data));
+  message.value = "";
+}
+
+function addMsg(text){
+  chat.innerHTML += `<div class="msg">${text}</div>`;
+  chat.scrollTop = chat.scrollHeight;
+}
+</script>
+
+</body>
+</html>
