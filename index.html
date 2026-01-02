@@ -233,11 +233,13 @@
 				<span id="welcome"></span>
 				<button onclick="logout()" class="logout">Çıkış</button>
 			</div>
-			<div id="chat-box"></div>
-			<form id="chat-form" autocomplete="off">
-				<input type="text" id="message" placeholder="Mesajınızı yazın..." maxlength="200" autocomplete="off">
-				<button type="submit">Gönder</button>
-			</form>
+			<div id="chat-main-area">
+				<div id="chat-box"></div>
+				<form id="chat-form" autocomplete="off">
+					<input type="text" id="message" placeholder="Mesajınızı yazın..." maxlength="200" autocomplete="off">
+					<button type="submit">Gönder</button>
+				</form>
+			</div>
 		</div>
 	</div>
 
@@ -293,10 +295,12 @@
 			setTimeout(function(){ document.getElementById('message').focus(); }, 100);
 		}
 
-		// Form submit eventini dinle
-		document.getElementById('chat-form').addEventListener('submit', function(e) {
-			e.preventDefault();
-			sendMessage();
+		// Form submit eventini dinle (her zaman çalışsın diye DOMContentLoaded ile bağla)
+		document.addEventListener('DOMContentLoaded', function() {
+			document.getElementById('chat-form').addEventListener('submit', function(e) {
+				e.preventDefault();
+				sendMessage();
+			});
 		});
 
 		// Mesajları çekme ve ekrana yazma
